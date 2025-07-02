@@ -36,4 +36,17 @@ public class AuthService {
         loginTrackingRepository.save(tracking);
         return user;
     }
+    
+    @Transactional
+    public void logout(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        
+        // Update login tracking
+        LoginTracking tracking = new LoginTracking();
+        tracking.setUser(user);
+        tracking.setLastLogout(LocalDateTime.now());
+        tracking.setIsNowLoggedIn("N");
+        loginTrackingRepository.save(tracking);
+    }
 } 

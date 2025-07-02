@@ -28,4 +28,14 @@ CREATE TABLE login_tracking (
     old_password VARCHAR(255),
     is_now_logged_in VARCHAR(1) DEFAULT 'N',
     FOREIGN KEY (customer_id) REFERENCES registration(customer_id)
+);
+
+CREATE TABLE wishlist (
+    wishlist_id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (customer_id) REFERENCES registration(customer_id),
+    FOREIGN KEY (product_id) REFERENCES product(product_id),
+    UNIQUE (customer_id, product_id)
 ); 
