@@ -37,6 +37,13 @@ public class UserController {
         user.setPassword(null); // Hide password
         return ResponseEntity.ok(user);
     }
+    
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse> logout(@RequestParam String email) {
+        authService.logout(email);
+        return ResponseEntity.ok(new ApiResponse(true, "Logged out successfully"));
+    }
+    
 
     @PutMapping("/{customerId}/password")
     public ResponseEntity<ApiResponse> changePassword(

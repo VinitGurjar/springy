@@ -71,4 +71,4 @@ public class UserService {
         tracking.setLastLogin(LocalDateTime.now());
         loginTrackingRepository.save(tracking);
     }
-} 
+}

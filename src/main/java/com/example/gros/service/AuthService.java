@@ -38,15 +38,16 @@ public class AuthService {
     }
     
     @Transactional
-    public void logout(Integer userId) {
-        User user = userRepository.findById(userId)
+    public void logout(String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        
-        // Update login tracking
+
+        // Find latest tracking record (optional enhancement: track per session)
         LoginTracking tracking = new LoginTracking();
         tracking.setUser(user);
-        tracking.setLastLogout(LocalDateTime.now());
         tracking.setIsNowLoggedIn("N");
+        tracking.setLastLogin(LocalDateTime.now()); // or create setLastLogout
         loginTrackingRepository.save(tracking);
     }
-} 
+
+}

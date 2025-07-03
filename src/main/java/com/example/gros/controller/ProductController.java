@@ -1,18 +1,13 @@
 package com.example.gros.controller;
 
-import com.example.gros.dto.ApiResponse;
-import com.example.gros.dto.ProductDTO;
 import com.example.gros.model.Product;
 import com.example.gros.service.ProductService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/products")
@@ -29,73 +24,43 @@ public class ProductController {
                                          @RequestParam(required = false) String name) {
         if (id != null) {
             Optional<Product> product = productService.getProductById(id);
-            return product.<ResponseEntity<?>>map(p -> ResponseEntity.ok(new ProductDTO(p)))
-                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                            .body(new ApiResponse(false, "Product not found")));
+            return product.<ResponseEntity<?>>map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found"));
         } else if (name != null) {
             List<Product> products = productService.searchProductsByName(name);
-            List<ProductDTO> productDTOs = products.stream()
-                    .map(ProductDTO::new)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(productDTOs);
+            return ResponseEntity.ok(products);
         } else {
             List<Product> products = productService.getAllProducts();
-            List<ProductDTO> productDTOs = products.stream()
-                    .map(ProductDTO::new)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(productDTOs);
+            return ResponseEntity.ok(products);
         }
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProductByIdPath(@PathVariable Integer id) {
+        Optional<Product> product = productService.getProductById(id);
+        return product.<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found"));
+    }
+
 
     @PostMapping
     public ResponseEntity<?> addProduct(@Valid @RequestBody Product product,
-                                        HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null || !"ADMIN".equals(session.getAttribute("userRole"))) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new ApiResponse(false, "Only admin can add products"));
-        }
-        
-        Integer adminId = (Integer) session.getAttribute("userId");
+                                        @RequestParam Integer adminId) {
         Product created = productService.addProduct(product, adminId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ProductDTO(created));
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{productId}")
     public ResponseEntity<?> updateProduct(@PathVariable Integer productId,
                                            @Valid @RequestBody Product product,
-                                           HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null || !"ADMIN".equals(session.getAttribute("userRole"))) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new ApiResponse(false, "Only admin can update products"));
-        }
-        
-        Integer adminId = (Integer) session.getAttribute("userId");
+                                           @RequestParam Integer adminId) {
         Product updated = productService.updateProduct(productId, product, adminId);
-        return ResponseEntity.ok(new ProductDTO(updated));
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable Integer productId,
-                                           HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null || !"ADMIN".equals(session.getAttribute("userRole"))) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new ApiResponse(false, "Only admin can delete products"));
-        }
-        
-        Integer adminId = (Integer) session.getAttribute("userId");
+                                           @RequestParam Integer adminId) {
         productService.deleteProduct(productId, adminId);
-        return ResponseEntity.ok(new ApiResponse(true, "Product deleted successfully"));
-    }
-    
-    @GetMapping("/search")
-    public ResponseEntity<List<ProductDTO>> searchProducts(@RequestParam String name) {
-        List<Product> products = productService.searchProductsByName(name);
-        List<ProductDTO> productDTOs = products.stream()
-                .map(ProductDTO::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(productDTOs);
+        return ResponseEntity.ok("Product deleted successfully");
     }
 } 

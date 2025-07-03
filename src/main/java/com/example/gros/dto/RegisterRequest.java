@@ -9,7 +9,7 @@ public class RegisterRequest {
     @Email
     private String email;
     @NotBlank
-    @Size(min = 8, max = 13)
+    @Size(min = 8, max = 100)
     private String password;
     @NotBlank
     private String address;

@@ -1,3 +1,4 @@
+
 package com.example.gros.model;
 
 import jakarta.persistence.*;
@@ -13,8 +14,10 @@ public class LoginTracking {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private User user;
-
     private LocalDateTime lastLogin;
+
+
+    
     private LocalDateTime lastLogout;
     private String updatedPassword;
     private String oldPassword;
@@ -35,4 +38,5 @@ public class LoginTracking {
     public void setOldPassword(String oldPassword) { this.oldPassword = oldPassword; }
     public String getIsNowLoggedIn() { return isNowLoggedIn; }
     public void setIsNowLoggedIn(String isNowLoggedIn) { this.isNowLoggedIn = isNowLoggedIn; }
-} 
+    
+}

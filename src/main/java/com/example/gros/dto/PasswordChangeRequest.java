@@ -1,3 +1,4 @@
+
 package com.example.gros.dto;
 
 import jakarta.validation.constraints.*;
@@ -6,7 +7,7 @@ public class PasswordChangeRequest {
     @NotBlank
     private String oldPassword;
     @NotBlank
-    @Size(min = 8, max = 13)
+    @Size(min = 8, max = 100)
     private String newPassword;
     @NotBlank
     private String confirmPassword;
@@ -18,4 +19,4 @@ public class PasswordChangeRequest {
     public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
     public String getConfirmPassword() { return confirmPassword; }
     public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
-} 
+}

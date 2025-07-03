@@ -27,23 +27,29 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse(false, ex.getMessage()));
     }
 
-    @ExceptionHandler(SecurityException.class)
-    public ResponseEntity<ApiResponse> handleSecurityException(SecurityException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new ApiResponse(false, ex.getMessage()));
-    }
-
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<ApiResponse> handleValidation(MethodArgumentNotValidException ex) {
+//        String errorMsg = ex.getBindingResult().getFieldError() != null ?
+//                ex.getBindingResult().getFieldError().getDefaultMessage() : "Validation error";
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                .body(new ApiResponse(false, errorMsg));
+//    }
+    
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse> handleValidation(MethodArgumentNotValidException ex) {
-        String errorMsg = ex.getBindingResult().getFieldError() != null ?
-                ex.getBindingResult().getFieldError().getDefaultMessage() : "Validation error";
+        String errorMsg = ex.getBindingResult().getFieldErrors().stream()
+            .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+            .reduce((msg1, msg2) -> msg1 + ", " + msg2)
+            .orElse("Validation error");
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ApiResponse(false, errorMsg));
     }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiResponse(false, "An error occurred: " + ex.getMessage()));
     }
-} 
+}
