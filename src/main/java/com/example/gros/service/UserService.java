@@ -6,7 +6,7 @@ import com.example.gros.model.User;
 import com.example.gros.model.LoginTracking;
 import com.example.gros.repository.UserRepository;
 import com.example.gros.repository.LoginTrackingRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -16,12 +16,11 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final LoginTrackingRepository loginTrackingRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserService(UserRepository userRepository, LoginTrackingRepository loginTrackingRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, LoginTrackingRepository loginTrackingRepository) {
         this.userRepository = userRepository;
         this.loginTrackingRepository = loginTrackingRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
